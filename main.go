@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/apella1/rss_aggregator/internal/database"
 	"github.com/go-chi/chi"
@@ -35,9 +36,12 @@ func main() {
 		log.Fatal("Can't connect to the database:", err)
 	}
 
+	db := database.New(conn)
 	apiCfg := apiConfig{
-		DB: database.New(conn),
+		DB: db,
 	}
+
+	go startScraping(db, 4, time.Minute)
 
 	router := chi.NewRouter()
 
