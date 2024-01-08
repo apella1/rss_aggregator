@@ -47,8 +47,8 @@ func scrapeFeed(db *database.Queries, wg *sync.WaitGroup, feed database.Feed) {
 	for _, item := range rssFeed.Channel.Item {
 		description := sql.NullString{}
 		if item.Description != "" {
-			description.String = item.Description,
-			description.Valid = true,
+			description.String = item.Description
+			description.Valid = true
 		}
 
 		pubAt, err := time.Parse(time.RFC1123Z, item.PubDate)
@@ -57,15 +57,15 @@ func scrapeFeed(db *database.Queries, wg *sync.WaitGroup, feed database.Feed) {
 			continue
 		}
 
-		_, err := db.CreatePost(context.Background(), database.CreatePostParams{
-			ID:        uuid.New(),
-			CreatedAt: time.Now().UTC(),
-			UpdatedAt: time.Now().UTC(),
-			Title:     item.Title,
-			Description: 	description,
+		_, err = db.CreatePost(context.Background(), database.CreatePostParams{
+			ID:          uuid.New(),
+			CreatedAt:   time.Now().UTC(),
+			UpdatedAt:   time.Now().UTC(),
+			Title:       item.Title,
+			Description: description,
 			PublishedAt: pubAt,
 			Url:         item.Link,
-			FeedID: feed.ID,
+			FeedID:      feed.ID,
 		})
 		if err != nil {
 			if strings.Contains(err.Error(), "duplicate key") {
